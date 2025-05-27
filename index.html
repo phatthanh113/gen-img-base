@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Image Overlay Tool</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h2>Upload Two Images</h2>
+    <input
+      type="text"
+      id="filenameInput"
+      placeholder="Tên file (không cần .png)"
+    />
+    <button id="downloadBtn">Download</button><br /><br />
+    <input type="file" id="baseImageInput" /><br />
+    <input type="file" id="overlayImageInput" /><br /><br />
+
+    <div style="position: relative">
+      <canvas id="canvas" width="800" height="800"></canvas>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
