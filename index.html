@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <title>Image Overlay Tool</title>
     <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
     <h2>Upload Two Images</h2>
@@ -11,10 +15,18 @@
       type="text"
       id="filenameInput"
       placeholder="Tên file (không cần .png)"
+      style="display: none"
     />
-    <button id="downloadBtn">Download</button><br /><br />
-    <input type="file" id="baseImageInput" /><br />
-    <input type="file" id="overlayImageInput" /><br /><br />
+    <button id="downloadBtn" style="display: none">Download</button>
+    <button id="toggleMoveBtn">
+      <i class="fas fa-lock"></i> Lock Y-Movement</button
+    ><br /><br />
+    <input type="file" id="baseImageInput" style="display: none" /><br />
+    <input
+      type="file"
+      id="overlayImageInput"
+      style="display: none"
+    /><br /><br />
 
     <div style="position: relative">
       <canvas id="canvas" width="800" height="800"></canvas>

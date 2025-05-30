@@ -4,6 +4,18 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const filenameInput = document.getElementById("filenameInput");
 const downloadBtn = document.getElementById("downloadBtn");
+const toggleMoveBtn = document.getElementById("toggleMoveBtn");
+
+let allowVerticalMove = false;
+
+// Toggle button event handler
+toggleMoveBtn.addEventListener("click", () => {
+  allowVerticalMove = !allowVerticalMove;
+  toggleMoveBtn.innerHTML = allowVerticalMove
+    ? '<i class="fas fa-unlock"></i> Unlock Y-Movement'
+    : '<i class="fas fa-lock"></i> Lock Y-Movement';
+  canvas.style.cursor = allowVerticalMove ? "move" : "ew-resize";
+});
 
 let baseImage = null;
 let overlayImage = null;
@@ -123,8 +135,11 @@ canvas.addEventListener("mousedown", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
   if (isDraggingBase) {
-    baseDraw.x = e.offsetX - dragOffsetX;
-    /*  baseDraw.y = e.offsetY - dragOffsetY; */
+    if (allowVerticalMove) {
+      baseDraw.y = e.offsetY - dragOffsetY;
+    } else {
+      baseDraw.x = e.offsetX - dragOffsetX;
+    }
     drawImages();
   }
 });
