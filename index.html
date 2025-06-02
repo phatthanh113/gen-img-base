@@ -20,13 +20,23 @@
     <button id="downloadBtn" style="display: none">Download</button>
     <button id="toggleMoveBtn">
       <i class="fas fa-lock"></i> Lock Y-Movement</button
-    ><br /><br />
+    ><br />
     <input type="file" id="baseImageInput" style="display: none" /><br />
-    <input
-      type="file"
-      id="overlayImageInput"
-      style="display: none"
-    /><br /><br />
+    <input type="file" id="overlayImageInput" style="display: none" />
+
+    <button id="toggleRangeBtn"></button><br /><br />
+    <div class="range-controls" style="margin-bottom: 20px">
+      <div>
+        <label for="overlayWidth">Overlay Width:</label>
+        <input type="range" id="overlayWidth" min="50" max="800" value="500" />
+        <span id="overlayWidthValue">500</span>
+      </div>
+      <div>
+        <label for="overlayHeight">Overlay Height:</label>
+        <input type="range" id="overlayHeight" min="50" max="800" value="270" />
+        <span id="overlayHeightValue">270</span>
+      </div>
+    </div>
 
     <div style="position: relative">
       <canvas id="canvas" width="800" height="800"></canvas>

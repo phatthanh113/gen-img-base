@@ -5,6 +5,61 @@ const ctx = canvas.getContext("2d");
 const filenameInput = document.getElementById("filenameInput");
 const downloadBtn = document.getElementById("downloadBtn");
 const toggleMoveBtn = document.getElementById("toggleMoveBtn");
+const toggleRangeBtn = document.getElementById("toggleRangeBtn");
+const rangeControls = document.querySelector(".range-controls");
+// Range input elements
+const overlayWidthInput = document.getElementById("overlayWidth");
+const overlayHeightInput = document.getElementById("overlayHeight");
+const overlayWidthValue = document.getElementById("overlayWidthValue");
+const overlayHeightValue = document.getElementById("overlayHeightValue");
+
+// Default overlay dimensions
+let overlayDimensions = {
+  width: 500,
+  height: 270,
+};
+
+// Load saved dimensions from Chrome storage
+function loadSavedDimensions() {
+  const savedWidth = localStorage.getItem("overlayWidth");
+  const savedHeight = localStorage.getItem("overlayHeight");
+
+  if (savedWidth) {
+    overlayDimensions.width = parseInt(savedWidth);
+    overlayWidthInput.value = savedWidth;
+    overlayWidthValue.textContent = savedWidth;
+  }
+
+  if (savedHeight) {
+    overlayDimensions.height = parseInt(savedHeight);
+    overlayHeightInput.value = savedHeight;
+    overlayHeightValue.textContent = savedHeight;
+  }
+}
+
+// Save dimensions to Chrome storage
+function saveDimensions() {
+  localStorage.setItem("overlayWidth", overlayDimensions.width);
+  localStorage.setItem("overlayHeight", overlayDimensions.height);
+}
+
+// Range input event handlers
+overlayWidthInput.addEventListener("input", (e) => {
+  overlayDimensions.width = parseInt(e.target.value);
+  overlayWidthValue.textContent = e.target.value;
+  saveDimensions();
+  if (overlayImage) drawImages();
+});
+
+overlayHeightInput.addEventListener("input", (e) => {
+  overlayDimensions.height = parseInt(e.target.value);
+  overlayHeightValue.textContent = e.target.value;
+  saveDimensions();
+  if (overlayImage) drawImages();
+});
+
+// Load saved dimensions when page loads
+loadSavedDimensions();
 
 let allowVerticalMove = false;
 
@@ -105,14 +160,22 @@ function drawImages() {
   }
 
   if (overlayImage) {
-    const overlayWidth = 500;
-    const overlayHeight = 270;
-    const x = (canvas.width - overlayWidth) / 2;
-    const y = canvas.height - overlayHeight - 40;
-
+    const x = (canvas.width - overlayDimensions.width) / 2;
+    const y = canvas.height - overlayDimensions.height - 40;
     ctx.fillStyle = "yellow";
-    ctx.fillRect(x - 5, y - 5, overlayWidth + 10, overlayHeight + 10);
-    ctx.drawImage(overlayImage, x, y, overlayWidth, overlayHeight);
+    ctx.fillRect(
+      x - 5,
+      y - 5,
+      overlayDimensions.width + 10,
+      overlayDimensions.height + 10
+    );
+    ctx.drawImage(
+      overlayImage,
+      x,
+      y,
+      overlayDimensions.width,
+      overlayDimensions.height
+    );
   }
 }
 
@@ -174,3 +237,16 @@ document.addEventListener("keydown", (event) => {
     link.click();
   }
 });
+
+toggleRangeBtn.addEventListener("click", () => {
+  const isHidden = rangeControls.style.display === "none";
+  rangeControls.style.display = isHidden ? "block" : "none";
+  toggleRangeBtn.innerHTML = isHidden
+    ? '<i class="fas fa-sliders"></i> Hide Change Size Overlay'
+    : '<i class="fas fa-sliders"></i> Show Change Size Overlay';
+});
+
+// Initialize controls as hidden
+rangeControls.style.display = "none";
+toggleRangeBtn.innerHTML =
+  '<i class="fas fa-sliders"></i> Show Change Size Overlay';

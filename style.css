@@ -23,3 +23,29 @@ canvas {
 .reset-icon:hover {
   transform: rotate(360deg);
 }
+
+.range-controls {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.range-controls div {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.range-controls label {
+  min-width: 100px;
+  text-align: right;
+}
+
+.range-controls input[type="range"] {
+  flex: 1;
+}
+
+.range-controls span {
+  min-width: 40px;
+  text-align: left;
+}
