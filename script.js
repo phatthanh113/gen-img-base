@@ -7,6 +7,7 @@ const downloadBtn = document.getElementById("downloadBtn");
 const toggleMoveBtn = document.getElementById("toggleMoveBtn");
 const toggleRangeBtn = document.getElementById("toggleRangeBtn");
 const rangeControls = document.querySelector(".range-controls");
+const layoutSelect = document.getElementById("layoutSelect");
 // Range input elements
 const overlayWidthInput = document.getElementById("overlayWidth");
 const overlayHeightInput = document.getElementById("overlayHeight");
@@ -149,33 +150,76 @@ function setBaseDrawDimensions() {
 function drawImages() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (baseImage) {
-    ctx.drawImage(
-      baseImage,
-      baseDraw.x,
-      baseDraw.y,
-      baseDraw.width,
-      baseDraw.height
-    );
-  }
+  if (currentLayout === "1:1") {
+    // Layout 1:1: Chia canvas thành 2 phần - trên và dưới
+    const halfHeight = canvas.height / 2;
 
-  if (overlayImage) {
-    const x = (canvas.width - overlayDimensions.width) / 2;
-    const y = canvas.height - overlayDimensions.height - 40;
-    ctx.fillStyle = "yellow";
-    ctx.fillRect(
-      x - 5,
-      y - 5,
-      overlayDimensions.width + 10,
-      overlayDimensions.height + 10
-    );
-    ctx.drawImage(
-      overlayImage,
-      x,
-      y,
-      overlayDimensions.width,
-      overlayDimensions.height
-    );
+    // Vẽ baseImage ở nửa dưới
+    if (baseImage) {
+      const baseWidth = canvas.width;
+      const baseHeight = halfHeight;
+      const baseX = 0;
+      const baseY = halfHeight; // Nửa dưới
+
+      ctx.drawImage(baseImage, baseX, baseY, baseWidth, baseHeight);
+    }
+
+    // Vẽ overlayImage ở nửa trên
+    if (overlayImage) {
+      const overlayWidth = canvas.width;
+      const overlayHeight = halfHeight;
+      const overlayX = 0;
+      const overlayY = 0; // Nửa trên
+
+      // Vẽ border màu vàng
+      ctx.fillStyle = "yellow";
+      ctx.fillRect(
+        overlayX - 5,
+        overlayY - 5,
+        overlayWidth + 10,
+        overlayHeight + 10
+      );
+
+      ctx.drawImage(
+        overlayImage,
+        overlayX,
+        overlayY,
+        overlayWidth,
+        overlayHeight
+      );
+    }
+  } else {
+    // Layout 16:3: Giữ nguyên logic cũ
+    if (baseImage) {
+      ctx.drawImage(
+        baseImage,
+        baseDraw.x,
+        baseDraw.y,
+        baseDraw.width,
+        baseDraw.height
+      );
+    }
+
+    if (overlayImage) {
+      const x = (canvas.width - overlayDimensions.width) / 2;
+      const y = canvas.height - overlayDimensions.height - 40;
+
+      ctx.fillStyle = "yellow";
+      ctx.fillRect(
+        x - 5,
+        y - 5,
+        overlayDimensions.width + 10,
+        overlayDimensions.height + 10
+      );
+
+      ctx.drawImage(
+        overlayImage,
+        x,
+        y,
+        overlayDimensions.width,
+        overlayDimensions.height
+      );
+    }
   }
 }
 
@@ -250,3 +294,49 @@ toggleRangeBtn.addEventListener("click", () => {
 rangeControls.style.display = "none";
 toggleRangeBtn.innerHTML =
   '<i class="fas fa-sliders"></i> Show Change Size Overlay';
+
+// Layout state
+let currentLayout = "16:3";
+
+// Load saved layout from storage
+const savedLayout = localStorage.getItem("selectedLayout");
+if (savedLayout) {
+  currentLayout = savedLayout;
+  layoutSelect.value = savedLayout;
+}
+
+// Layout select handler
+layoutSelect.addEventListener("change", (e) => {
+  currentLayout = e.target.value;
+  localStorage.setItem("selectedLayout", currentLayout);
+  if (currentLayout === "1:1" && baseImage) {
+    // Set overlay dimensions to match base image dimensions
+    const baseWidth = baseDraw.width;
+    const baseHeight = baseDraw.height;
+    overlayDimensions.width = baseWidth;
+    overlayDimensions.height = baseHeight;
+
+    // Update range inputs
+    overlayWidthInput.value = baseWidth;
+    overlayHeightInput.value = baseHeight;
+    overlayWidthValue.textContent = baseWidth;
+    overlayHeightValue.textContent = baseHeight;
+
+    // Save new dimensions
+    saveDimensions();
+  } else {
+    // Reset to default 16:3 dimensions
+    overlayDimensions.width = 500;
+    overlayDimensions.height = 270;
+
+    // Update range inputs
+    overlayWidthInput.value = 500;
+    overlayHeightInput.value = 270;
+    overlayWidthValue.textContent = "500";
+    overlayHeightValue.textContent = "270";
+
+    // Save new dimensions
+    saveDimensions();
+  }
+  if (overlayImage) drawImages();
+});
