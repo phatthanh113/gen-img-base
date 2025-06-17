@@ -151,25 +151,37 @@ function drawImages() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (currentLayout === "1:1") {
-    // Layout 1:1: Chia canvas thành 2 phần - trên và dưới
-    const halfHeight = canvas.height / 2;
+    // Layout 4:6: Chia canvas thành 2 phần - trên 40% và dưới 60%
+    const topHeight = canvas.height * 0.45; // 40% cho phần trên
+    const bottomHeight = canvas.height * 0.55; // 60% cho phần dưới
 
-    // Vẽ baseImage ở nửa dưới
+    // Vẽ baseImage ở nửa dưới (60% canvas)
     if (baseImage) {
-      const baseWidth = canvas.width;
-      const baseHeight = halfHeight;
-      const baseX = 0;
-      const baseY = halfHeight; // Nửa dưới
+      const canvasWidth = canvas.width;
+      const canvasBottomHeight = bottomHeight;
+
+      // Tính toán tỷ lệ scale để ảnh vừa với canvas hoặc lớn hơn
+      const scaleX = canvasWidth / baseImage.naturalWidth;
+      const scaleY = canvasBottomHeight / baseImage.naturalHeight;
+      const scale = Math.max(scaleX, scaleY); // Chọn scale lớn hơn để ảnh không bị nhỏ hơn canvas
+
+      // Kích thước ảnh sau khi scale
+      const baseWidth = baseImage.naturalWidth * scale;
+      const baseHeight = baseImage.naturalHeight * scale;
+
+      // Vị trí ảnh (có thể được điều chỉnh khi di chuyển)
+      const baseX = 0; // Sử dụng baseImageX từ logic di chuyển, mặc định là 0
+      const baseY = topHeight; // Sử dụng baseImageY từ logic di chuyển, mặc định là 0
 
       ctx.drawImage(baseImage, baseX, baseY, baseWidth, baseHeight);
     }
 
-    // Vẽ overlayImage ở nửa trên
+    // Vẽ overlayImage ở nửa trên (40% canvas)
     if (overlayImage) {
       const overlayWidth = canvas.width;
-      const overlayHeight = halfHeight;
+      const overlayHeight = topHeight; // Sử dụng 40% height
       const overlayX = 0;
-      const overlayY = 0; // Nửa trên
+      const overlayY = 0; // Bắt đầu từ đầu canvas
 
       // Vẽ border màu vàng
       ctx.fillStyle = "yellow";
@@ -295,6 +307,20 @@ rangeControls.style.display = "none";
 toggleRangeBtn.innerHTML =
   '<i class="fas fa-sliders"></i> Show Change Size Overlay';
 
+// Load saved layout and set initial canvas height
+function setCanvasHeight() {
+  if (currentLayout === "1:1") {
+    canvas.height = 1200;
+    canvas.width = 1000;
+  } else {
+    canvas.height = 800;
+    canvas.width = 800;
+  }
+  if (baseImage) {
+    setBaseDrawDimensions();
+  }
+}
+
 // Layout state
 let currentLayout = "16:3";
 
@@ -304,11 +330,14 @@ if (savedLayout) {
   currentLayout = savedLayout;
   layoutSelect.value = savedLayout;
 }
+setCanvasHeight();
 
 // Layout select handler
 layoutSelect.addEventListener("change", (e) => {
   currentLayout = e.target.value;
   localStorage.setItem("selectedLayout", currentLayout);
+  setCanvasHeight();
+
   if (currentLayout === "1:1" && baseImage) {
     // Set overlay dimensions to match base image dimensions
     const baseWidth = baseDraw.width;
